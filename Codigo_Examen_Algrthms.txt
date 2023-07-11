@@ -1,0 +1,159 @@
+import datetime
+
+# Variables globales
+pisos = 10
+departamentos_por_piso = 4
+total_departamentos = pisos * departamentos_por_piso
+
+# Arreglos para almacenar el estado de los departamentos y los compradores
+departamentos = [['-' for _ in range(departamentos_por_piso)] for _ in range(pisos)]
+compradores = []
+
+# Precios de los departamentos
+precios = {
+    'A': 3800,
+    'B': 3000,
+    'C': 2800,
+    'D': 3500
+}
+
+# Tipos de departamento
+tipos = {"A": "3.800 UF", "B": "3.000 UF", "C": "2.800 UF", "D": "3.500 UF"}
+
+# Función para mostrar el menú y obtener la opción elegida por el usuario
+def obtener_opcion():
+    print("\n*************** MENÚ ***************")
+    print ()
+    print ("Bienvenido/a a Inmobiliaria CASA FELIZ")
+    print()
+    print ("Seleccione una opción:")
+    print ()
+    print("1. Comprar departamento")
+    print("2. Mostrar departamentos disponibles")
+    print("3. Ver listado de compradores")
+    print("4. Mostrar ganancias totales")
+    print("5. Salir")
+    print ()
+    opcion = input("Seleccione una opción: ")
+    print ()
+    while not opcion.isdigit() or int(opcion) not in range(1, 6):
+        print("Opción inválida. Intente nuevamente.")
+        print ()
+        opcion = input("Seleccione una opción: ")
+    return int(opcion)
+print ()
+
+# Función para validar el número de piso ingresado
+def validar_piso(piso):
+    if piso < 1 or piso > pisos:
+        print("Error: Piso inválido.")
+        return False
+    return True
+
+# Función para validar el tipo de departamento ingresado
+def validar_tipo_departamento(tipo):
+    if tipo not in precios:
+        print("Error: Tipo de departamento inválido.")
+        return False
+    return True
+
+# Función para comprar un departamento
+def comprar_departamento():
+    print("\n********* COMPRAR DEPARTAMENTO *********")
+    piso = int(input("Ingrese el número de piso (Piso 1 al 10): "))
+    if not validar_piso(piso):
+        return
+
+    tipo = input("Ingrese el tipo de departamento (A 3800 UF, B 3000 UF, C 2800 UF o D 3500 UF): ").upper()
+    print (tipos)
+    if not validar_tipo_departamento(tipo):
+        return
+
+    departamento = departamentos[piso - 1]
+    if tipo in departamento:
+        print("El departamento", tipo + str(piso), "no está disponible.")
+        return
+
+    departamento[departamento.index('-')] = tipo
+
+    id_comprador = input("Ingrese el ID del comprador: ")
+    comprador = {
+        'id': id_comprador,
+        'departamento': tipo + str(piso)
+    }
+    print ()
+    print ("El departamento comprado es el:", tipo,piso )
+    compradores.append(comprador)   
+    print ()
+
+    print("¡Su compra se ha realizado correctamente!")
+    print ()
+
+# Función para mostrar los departamentos disponibles
+def mostrar_departamentos_disponibles():
+    print("\n-- DEPARTAMENTOS DISPONIBLES --")
+    print("Piso               Tipo")
+    for piso, deptos in enumerate(departamentos, start=1):
+        disponibles = [str(i + 1) if depto == '-' else 'X' for i, depto in enumerate(deptos)]
+        print(f"{piso:2d} {' '.join(disponibles)}")
+
+# Función para mostrar el listado de compradores
+def mostrar_listado_compradores():
+    if not compradores:
+        print("\nNo hay compradores registrados.")
+        return
+
+    print("\n-- LISTADO DE COMPRADORES --")
+    for comprador in sorted(compradores, key=lambda x: x['id']):
+        print(f"ID: {comprador['id']}, Departamento: {comprador['departamento']}")
+
+# Función para mostrar las ganancias totales
+def mostrar_ganancias_totales():
+    if not compradores:
+        print("\nNo hay ventas realizadas.")
+        return
+
+    ganancias = {tipo: 0 for tipo in precios}
+
+    for comprador in compradores:
+        tipo = comprador['departamento'][0]
+        ganancias[tipo] += precios[tipo]
+
+    total_ganancias = sum(ganancias.values())
+
+    print("\n-- GANANCIAS TOTALES --")
+    print("Tipo de Departamento    Cantidad     Total")
+    for tipo, cantidad in ganancias.items():
+        print(f"{tipo:<10s} {cantidad // precios[tipo]:<9d} {cantidad:<5d} UF")
+    print(f"TOTAL {total_departamentos:<9d} {total_ganancias:<5d} UF")
+
+# Función para obtener la fecha actual formateada
+def obtener_fecha_actual():
+    fecha_actual = datetime.date.today()
+    return fecha_actual.strftime("%d/%m/%Y")
+
+# Función para salir del programa
+def salir():
+    print("\nGracias por preferir CASA FELIZ.")
+    print("Fecha actual:", obtener_fecha_actual())
+
+# Función principal del programa
+def main():
+    while True:
+        opcion = obtener_opcion()
+
+        if opcion == 1:
+            comprar_departamento()
+        elif opcion == 2:
+            mostrar_departamentos_disponibles()
+        elif opcion == 3:
+            mostrar_listado_compradores()
+        elif opcion == 4:
+            mostrar_ganancias_totales()
+        elif opcion == 5:
+            salir()
+            break
+
+# Ejecutar el programa
+if __name__ == '__main__':
+    main()
